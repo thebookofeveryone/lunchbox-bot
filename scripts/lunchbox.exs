@@ -1,0 +1,2 @@
+LunchboxBot.config
+|> LunchboxBot.run
