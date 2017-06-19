@@ -67,4 +67,11 @@ defmodule LunchboxBot do
         error
     end
   end
+
+  def monday? do
+    Date.utc_today
+    |> Date.to_erl
+    |> :calendar.day_of_the_week()
+    |> Kernel.==(1)
+  end
 end
