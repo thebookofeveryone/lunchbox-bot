@@ -24,11 +24,16 @@ defmodule LunchboxBot do
       {:ok, ids} ->
         ids
         |> Enum.shuffle
+        |> select_users
         |> create_couples
         |> post_to_slack(config)
       error ->
         error
     end
+  end
+
+  def select_users(ids) do
+    Enum.take(ids, round(length(ids) / 2))
   end
 
   def post_to_slack(couples, config) do
