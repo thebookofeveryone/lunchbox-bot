@@ -39,4 +39,4 @@ config :lunchbox_bot,
 ##
 
 # config :lunchbox_bot,
-#   greeting: "It's the most exciting moment of the week again!\n There are the matches of this week:"
+#   greeting: "It's the most exciting moment of the week again!\n These are the matches of this week:"
