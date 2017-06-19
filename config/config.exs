@@ -32,3 +32,11 @@ use Mix.Config
 config :lunchbox_bot,
   slack_token: System.get_env("SLACK_TOKEN"),
   slack_channel: System.get_env("SLACK_CHANNEL")
+
+##
+# You can customise the greeting part of the matches message.
+# Just uncomment the line below and change the message to the one you want.
+##
+
+# config :lunchbox_bot,
+#   greeting: "It's the most exciting moment of the week again!\n There are the matches of this week:"
