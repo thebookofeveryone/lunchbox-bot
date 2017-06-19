@@ -14,7 +14,7 @@ defmodule LunchboxBot do
   def config do
     %{
       token: @token,
-      channel: @channel
+      channel: @channel,
       greeting: Application.get_env(:lunchbox_bot, :greeting, @default_greeting)
     }
   end
@@ -41,9 +41,7 @@ defmodule LunchboxBot do
     HTTPoison.post("#{@base_endpoint}#{@post_message_path}", {:form, [token: token, channel: channel, text: text, link_names: true]})
   end
 
-  def build_text(couples, config) do
-    greeting = Map.fetch(config, :greeting)
-
+  def build_text(couples, %{greeting: greeting}) do
     text =
       couples
       |> Enum.map(fn({a, b}) ->

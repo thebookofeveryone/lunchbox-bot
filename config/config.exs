@@ -31,7 +31,8 @@ use Mix.Config
 
 config :lunchbox_bot,
   slack_token: System.get_env("SLACK_TOKEN"),
-  slack_channel: System.get_env("SLACK_CHANNEL")
+  slack_channel: System.get_env("SLACK_CHANNEL"),
+  greeting: System.get_env("GREETING")
 
 ##
 # You can customise the greeting part of the matches message.
