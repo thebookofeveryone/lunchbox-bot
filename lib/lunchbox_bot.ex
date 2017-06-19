@@ -4,7 +4,7 @@ defmodule LunchboxBot do
   @base_endpoint "https://slack.com/api/"
   @channel_info_path "/channels.info"
   @post_message_path "/chat.postMessage"
-  @greeting """
+  @default_greeting """
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
   Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
@@ -12,7 +12,11 @@ defmodule LunchboxBot do
   """
 
   def config do
-    %{token: @token, channel: @channel}
+    %{
+      token: @token,
+      channel: @channel
+      greeting: Application.get_env(:lunchbox_bot, :greeting, @default_greeting)
+    }
   end
 
   def run(%{token: token, channel: channel} = config) do
@@ -29,7 +33,7 @@ defmodule LunchboxBot do
 
   def post_to_slack(couples, config) do
     couples
-    |> build_text
+    |> build_text(config)
     |> do_post_to_slack(config)
   end
 
@@ -37,7 +41,9 @@ defmodule LunchboxBot do
     HTTPoison.post("#{@base_endpoint}#{@post_message_path}", {:form, [token: token, channel: channel, text: text, link_names: true]})
   end
 
-  def build_text(couples) do
+  def build_text(couples, config) do
+    greeting = Map.fetch(config, :greeting)
+
     text =
       couples
       |> Enum.map(fn({a, b}) ->
@@ -45,7 +51,7 @@ defmodule LunchboxBot do
       end)
       |> Enum.join("\n")
 
-    "#{@greeting}\n #{text}"
+    "#{greeting}\n #{text}"
   end
 
   def create_couples(user_ids) do
