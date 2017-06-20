@@ -19,7 +19,15 @@ defmodule LunchboxBot do
     }
   end
 
-  def run(%{token: token, channel: channel} = config) do
+  def run(config) do
+    if monday?() do
+      do_run(config)
+    else
+      {:error, :it_is_not_monday}
+    end
+  end
+
+  defp do_run(%{token: token, channel: channel} = config) do
     case retrieve_users_in(token, channel) do
       {:ok, ids} ->
         ids
