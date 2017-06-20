@@ -20,10 +20,10 @@ defmodule LunchboxBot do
   end
 
   def run(config) do
-    if monday?() do
+    if friday?() do
       do_run(config)
     else
-      {:error, :it_is_not_monday}
+      {:error, :it_is_not_friday}
     end
   end
 
@@ -85,10 +85,10 @@ defmodule LunchboxBot do
     end
   end
 
-  def monday? do
+  def friday? do
     Date.utc_today
     |> Date.to_erl
     |> :calendar.day_of_the_week()
-    |> Kernel.==(1)
+    |> Kernel.==(5)
   end
 end
