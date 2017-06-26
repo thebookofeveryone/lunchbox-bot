@@ -4,12 +4,14 @@ defmodule LunchboxBot do
   @base_endpoint "https://slack.com/api/"
   @channel_info_path "/channels.info"
   @post_message_path "/chat.postMessage"
+  @user_info_path "/users.info"
   @default_greeting """
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
   Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
   Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
   Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
   """
+  @ignore_people ["hugh", "ricardo", "victor"]
 
   def config do
     %{
@@ -31,6 +33,13 @@ defmodule LunchboxBot do
     case retrieve_users_in(token, channel) do
       {:ok, ids} ->
         ids
+        |> Enum.map(fn(id) ->
+          {:ok, %{"name" => real_name}} = retrieve_user_info(token, id)
+          {id, real_name}
+        end)
+        |> Enum.filter(fn({_, name}) ->
+          !Enum.member?(@ignore_people, name)
+        end)
         |> Enum.shuffle
         |> select_users
         |> create_couples
@@ -57,7 +66,7 @@ defmodule LunchboxBot do
   def build_text(couples, %{greeting: greeting}) do
     text =
       couples
-      |> Enum.map(fn({a, b}) ->
+      |> Enum.map(fn({{a,_}, {b,_}}) ->
         "<@#{a}> with <@#{b}>"
       end)
       |> Enum.join("\n")
@@ -80,6 +89,20 @@ defmodule LunchboxBot do
           |> Map.get("channel", %{})
           |> Map.get("members", %{})
         {:ok, ids}
+      error ->
+        error
+    end
+  end
+
+  def retrieve_user_info(token, user) do
+    case HTTPoison.post("#{@base_endpoint}#{@user_info_path}", {:form, [token: token, user: user]}) do
+      {:ok, resp} ->
+        info =
+          resp
+          |> Map.get(:body, "")
+          |> Poison.decode!
+          |> Map.get("user", %{})
+        {:ok, info}
       error ->
         error
     end
